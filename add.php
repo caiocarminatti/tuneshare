@@ -1,4 +1,6 @@
-<?php require_once('header.php'); ?>
+<?php session_start();
+      require_once('header.php');
+?>
 <body class="add">
 <div class="container inner">
 <header class="masthead mb-auto">
@@ -12,53 +14,62 @@
     </div>
   </header>
     <?php
-    //initialize variables 
-    $id = null; 
+    //initialize variables
+    $id = null;
     $firstname = null;
-    $lastname = null; 
-    $location = null; 
-    $genre = null; 
-    $age = null; 
-    $email = null; 
+    $lastname = null;
+    $location = null;
+    $genre = null;
+    $age = null;
+    $email = null;
     $favsong = null;
-   
-    //added profile & linkk 
-    $profile = null; 
+
+    //added profile & linkk
+    $profile = null;
     $link = null;
 
     if(!empty($_GET['id']) && (is_numeric($_GET['id']))) {
       //grab the id from url
       $id = filter_input(INPUT_GET, 'id');
-      //connect to the database 
-      require_once('connect.php'); 
-      //set up our query 
-      $sql = "SELECT * FROM songs WHERE user_id = :user_id;"; 
+      //connect to the database
+      require_once('connect.php');
+      //set up our query
+      $sql = "SELECT * FROM songs WHERE user_id = :user_id;";
       //prepare our statement
-      $statement = $db->prepare($sql); 
-      //bind 
-      $statement->bindParam(':user_id', $id); 
-      //execute 
-      $statement->execute(); 
-      //use fetchAll to store 
-      $records = $statement->fetchAll(); 
-      //to loop through, use a foreach loop 
-      foreach($records as $record) : 
-      $firstname = $record['first_name']; 
-      $lastname = $record['last_name']; 
+      $statement = $db->prepare($sql);
+      //bind
+      $statement->bindParam(':user_id', $id);
+      //execute
+      $statement->execute();
+      //use fetchAll to store
+      $records = $statement->fetchAll();
+      //to loop through, use a foreach loop
+      foreach($records as $record) :
+      $firstname = $record['first_name'];
+      $lastname = $record['last_name'];
       $genre = $record['genre'];
-      $age = $record['age'];  
-      $location = $record['location']; 
-      $email = $record['email']; 
-      $favsong = $record['favsong']; 
+      $age = $record['age'];
+      $location = $record['location'];
+      $email = $record['email'];
+      $favsong = $record['favsong'];
       $profilepic = $record['profile'];
       $link = $record['link'];
-      endforeach; 
-      //close the db connection 
-      $statement->closeCursor(); 
+      endforeach;
+      //close the db connection
+      $statement->closeCursor();
     }
     ?>
     <main>
-    <h1>Share Your Fave Tunes</h1>
+      <?php
+        if(isset($_SESSION['name']))
+        {
+          echo "<h1>Share Your Fave Tunes ".$_SESSION['name']."!</h1>";
+        }
+        else
+        {
+          echo "<h1>Share Your Fave Tunes!</h1>";
+        }
+      ?>
       <form action="process.php" method="post" enctype="multipart/form-data" class="form">
         <!-- add hidden input with user id if editing -->
         <input type="hidden" name="user_id" value="<?php echo $id;?>">
